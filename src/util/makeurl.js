@@ -1,11 +1,11 @@
-var isArray = require('./object-util.js').isArray;
+var ObjectUtil = require('./object-util.js');
 
 module.exports = function makeUrl(components, params) {
-  components = !isArray(components) ? [components] : components;
+  components = !ObjectUtil.isArray(components) ? [components] : components;
   params = params || {};
   return [
     components.filter(function(c) {
-      return c !== null && c !== undefined;
+      return ObjectUtil.isDefined(c);
     }).map(function(c) {
       return c.replace(/^\/|\/$/, '');
     }).join('/'),

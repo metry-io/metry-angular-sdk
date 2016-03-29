@@ -2,7 +2,8 @@ module.exports = {
   assign: assign,
   filterEmptyValues: filterEmptyValues,
   isArray: isArray,
-  isString: isString
+  isString: isString,
+  isDefined: isDefined
 };
 
 function filterEmptyValues(object) {
@@ -10,9 +11,7 @@ function filterEmptyValues(object) {
   for (var key in object) {
     if (!object.hasOwnProperty(key)) { continue; }
     var value = object[key];
-    var isString = isString(value);
-    if (value !== null && value !== undefined &&
-        ((isString && value.length > 0) || !isString)) {
+    if (isDefined(value) && (!isString(value) || value.length > 0)) {
           resource[key] = value;
         }
   }
@@ -48,4 +47,8 @@ function isString(object) {
 
 function isArray(object) {
   return Object.prototype.toString.call(object) === '[object Array]';
+}
+
+function isDefined(object) {
+  return object !== null && object !== undefined;
 }

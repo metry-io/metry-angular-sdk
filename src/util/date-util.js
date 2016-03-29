@@ -39,7 +39,7 @@ function _zeroPaddedString(number) {
 }
 
 function _periodFormat(year, month, day, hour) {
-  if (month !== null && month !== undefined) { month ++; }
+  if (ObjectUtil.isDefined(month)) { month ++; }
 
   return _zeroPaddedString(year) +
          _zeroPaddedString(month) +
