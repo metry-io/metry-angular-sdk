@@ -1,0 +1,47 @@
+{
+  "name": "metry-angular-sdk",
+  "version": "0.9.0",
+  "description": "Angular SDK for Metry API v2",
+  "main": "src/index.js",
+  "scripts": {
+    "clean": "rm -rf ./tmp && mkdir ./tmp",
+    "prestart": "npm run clean",
+    "start": "npm run build:debug && npm run test:debug && npm run build:min && npm run test:min",
+    "test:min": "karma start",
+    "test:debug": "karma start karma.debug.conf.js",
+    "watch:test": "karma start --auto-watch --no-single-run",
+    "build:debug": "browserify ./src/index.js > ./tmp/metry.js",
+    "build:min": "browserify ./src/index.js | uglifyjs --screw-ie8 -m -c drop_console > ./tmp/metry.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metry-io/metry-angular-sdk.git"
+  },
+  "keywords": [
+    "metry",
+    "api",
+    "angular"
+  ],
+  "author": "Torsten Freyhall",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/metry-io/metry-angular-sdk/issues"
+  },
+  "homepage": "https://github.com/metry-io/metry-angular-sdk",
+  "dependencies": {
+    "angular": ">=1.4.0"
+  },
+  "devDependencies": {
+    "angular-mocks": ">=1.4.0",
+    "browserify": "^9.0.3",
+    "browserify-ngannotate": "^2.0.0",
+    "jasmine-core": "^2.2.0",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^0.2.3",
+    "karma-jasmine": "^0.3.5",
+    "uglify-js": "^2.6.2"
+  },
+  "browserify": {
+    "transform": ["browserify-ngannotate"]
+  }
+}
