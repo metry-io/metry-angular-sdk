@@ -71,7 +71,7 @@ describe('Metry Resource', function() {
     };
     var url = [BASE_URL, 'api/2.0', 'tests', test._id].join('/');
 
-    $httpBackend.expectPUT(url).respond(200, {});
+    $httpBackend.expectPUT(url, {name: 'Working test'}).respond(200, {});
     resource.save(test);
     $httpBackend.flush();
   });
