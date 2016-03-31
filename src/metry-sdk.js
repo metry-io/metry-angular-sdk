@@ -45,6 +45,7 @@ module.exports = /*@ngInject*/ function(
     }
     if (!res || res.status === 401) {
       $rootScope.$broadcast(EVENT_LOGIN_NEEDED);
+      return $q.reject(res);
     }
     return $q.reject((res && res.data && res.data.errors) ? res.data.errors : res);
   }
