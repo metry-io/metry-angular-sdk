@@ -170,4 +170,14 @@ describe('Metry Resource', function() {
     mry('consumptions').getData(dummyId, 'day', '20150101', ['flow', 'energy']);
     $httpBackend.flush();
   });
+
+    it('should allow fetching of readings (no granularity needed)', function() {
+    var dummyId = 'id12345';
+    var url = [BASE_URL, 'api/2.0', 'readings', dummyId, '20150101'].join('/');
+    var urlFlow = url + '?metrics=flow';
+
+    $httpBackend.expectGET(urlFlow).respond(200, {});
+    mry('readings').getData(dummyId, null, '20150101', ['flow']);
+    $httpBackend.flush();
+  });
 });

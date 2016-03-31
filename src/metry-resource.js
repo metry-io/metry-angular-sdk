@@ -21,7 +21,7 @@ MetryResource.prototype.getData = function(id, granularity, ranges, metrics) {
 
   return this.req({
     method: 'GET',
-    url: [resourceUrl(this), id, granularity, ranges.join('+')].join('/'),
+    url: makeUrl([resourceUrl(this), id, granularity, ranges.join('+')]),
     params: {
       metrics: metrics.join(',')
     }
