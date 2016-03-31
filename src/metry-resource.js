@@ -43,6 +43,7 @@ MetryResource.prototype.of = function (parent, parentId) {
 };
 
 function makeConfig(resource, id, method, data, extraConfig, action) {
+  method = mergedMethod(method, extraConfig);
   return ObjectUtil.assign({
     method: method,
     url: resourceUrl(resource, id, action),
@@ -53,6 +54,11 @@ function makeConfig(resource, id, method, data, extraConfig, action) {
 
 function useData(method) {
   return (['PUT', 'POST'].indexOf(method) !== -1);
+}
+
+function mergedMethod(method, extraConfig) {
+  if (typeof extraConfig !== 'object') { return method; }
+  return ObjectUtil.isDefined(extraConfig.method) ? extraConfig.method : method;
 }
 
 function resourceUrl(resource, id, action) {
