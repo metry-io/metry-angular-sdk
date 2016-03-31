@@ -14,6 +14,20 @@ MetryResource.prototype.get = function(id, config) {
   return this.req(makeConfig(this, id, 'GET', {}, config));
 };
 
+MetryResource.prototype.getData = function(id, granularity, ranges, metrics) {
+  metrics = metrics || ['energy'];
+  metrics = ObjectUtil.isArray(metrics) ? metrics : [metrics];
+  ranges = ObjectUtil.isArray(ranges) ? ranges : [ranges];
+
+  return this.req({
+    method: 'GET',
+    url: [resourceUrl(this), id, granularity, ranges.join('+')].join('/'),
+    params: {
+      metrics: metrics.join(',')
+    }
+  });
+};
+
 MetryResource.prototype.query = function(params, config) {
   return this.req(makeConfig(this, null, 'GET', params, config));
 };

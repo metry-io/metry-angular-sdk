@@ -139,4 +139,35 @@ describe('Metry Resource', function() {
     resource.get(testId, {method: 'POST'});
     $httpBackend.flush();
   });
+
+  // DATA FETCHING
+  it('should assume electricity metric unless specified', function() {
+    var dummyId = 'id12345';
+    var url = [BASE_URL, 'api/2.0', 'consumptions', dummyId, 'day', '20150101'].join('/');
+    var urlElectricity = url + '?metrics=energy';
+
+    $httpBackend.expectGET(urlElectricity).respond(200, {});
+    mry('consumptions').getData(dummyId, 'day', '20150101');
+    $httpBackend.flush();
+  });
+
+  it('should respect the provided metrics', function() {
+    var dummyId = 'id12345';
+    var url = [BASE_URL, 'api/2.0', 'consumptions', dummyId, 'day', '20150101'].join('/');
+    var urlFlow = url + '?metrics=flow';
+
+    $httpBackend.expectGET(urlFlow).respond(200, {});
+    mry('consumptions').getData(dummyId, 'day', '20150101', 'flow');
+    $httpBackend.flush();
+  });
+
+  it('should allow fetching multiple metrics', function() {
+    var dummyId = 'id12345';
+    var url = [BASE_URL, 'api/2.0', 'consumptions', dummyId, 'day', '20150101'].join('/');
+    var urlFlow = url + '?metrics=flow,energy';
+
+    $httpBackend.expectGET(urlFlow).respond(200, {});
+    mry('consumptions').getData(dummyId, 'day', '20150101', ['flow', 'energy']);
+    $httpBackend.flush();
+  });
 });
