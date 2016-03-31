@@ -1,6 +1,6 @@
 {
   "name": "metry-angular-sdk",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "Angular SDK for Metry API v2",
   "main": "src/index.js",
   "scripts": {
