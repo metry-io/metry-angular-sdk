@@ -11,7 +11,8 @@
     "test:debug": "karma start karma.debug.conf.js",
     "watch:test": "karma start --auto-watch --no-single-run",
     "build:debug": "browserify ./src/index.js > ./tmp/metry.js",
-    "build:min": "browserify ./src/index.js | uglifyjs --screw-ie8 -m -c drop_console > ./tmp/metry.min.js"
+    "build:min": "browserify ./src/index.js | uglifyjs --screw-ie8 -m -c drop_console > ./tmp/metry.min.js",
+    "build:standalone": "browserify ./src/standalone-build.js > ./tmp/metry.standalone.js"
   },
   "repository": {
     "type": "git",
