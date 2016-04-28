@@ -9,7 +9,7 @@
     "start": "npm run build:debug && npm run test:debug && npm run build:min && npm run test:min",
     "test:min": "karma start",
     "test:debug": "karma start karma.debug.conf.js",
-    "watch:test": "karma start --auto-watch --no-single-run",
+    "watch:test": "karma start karma.debug.conf --auto-watch --no-single-run",
     "build:debug": "browserify ./src/index.js > ./tmp/metry.js",
     "build:min": "browserify ./src/index.js | uglifyjs --screw-ie8 -m -c drop_console > ./tmp/metry.min.js",
     "build:standalone": "browserify ./src/standalone-build.js > ./tmp/metry.standalone.js"
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "angular-mocks": ">=1.4.0",
-    "browserify": "^9.0.3",
+    "browserify": "^13.0.0",
     "browserify-ngannotate": "^2.0.0",
     "jasmine-core": "^2.2.0",
     "karma": "^0.13.22",
