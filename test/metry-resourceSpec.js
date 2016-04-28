@@ -180,4 +180,50 @@ describe('Metry Resource', function() {
     mry('readings').getData(dummyId, null, '20150101', ['flow']);
     $httpBackend.flush();
   });
+
+  it('should search a collection using search API', function() {
+    var params = {
+      q: 'test:true'
+    };
+    var collection = 'tests';
+    var url = [BASE_URL, 'api/2.0', 'search', collection].join('/');
+    url += '?q=test:true';
+
+    $httpBackend.expectGET(url).respond(200, {});
+    mry(collection).search(params);
+    $httpBackend.flush();
+  });
+
+  it('should search a collection using search API with both params and query', function() {
+    var params = {
+      revoked: true,
+      dog: 1,
+      q: 'test:true'
+    };
+    var collection = 'tests';
+    var url = [BASE_URL, 'api/2.0', 'search', collection].join('/');
+    url += '?q=test:true+AND+revoked:true+AND+dog:1';
+
+    $httpBackend.expectGET(url).respond(200, {});
+    mry(collection).search(params);
+    $httpBackend.flush();
+  });
+
+  it('should search a collection using search API with both params and query, allowing sort and filtering', function() {
+    var params = {
+      revoked: true,
+      dog: 1,
+      q: 'test:true',
+      sort: 'test',
+      limit: 100,
+      skip: 200
+    };
+    var collection = 'tests';
+    var url = [BASE_URL, 'api/2.0', 'search', collection].join('/');
+    url += '?limit=100&q=test:true+AND+revoked:true+AND+dog:1&skip=200&sort=test';
+
+    $httpBackend.expectGET(url).respond(200, {});
+    mry(collection).search(params);
+    $httpBackend.flush();
+  });
 });

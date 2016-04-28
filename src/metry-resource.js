@@ -1,5 +1,8 @@
 var makeUrl = require('./util/makeurl.js');
 var ObjectUtil = require('./util/object-util.js');
+var SearchUtil = require('./util/search-util.js');
+
+var NON_QUERY_KEYS = ['skip', 'limit', 'sort', 'q'];
 
 function MetryResource(request, resource, parent, parentId) {
   this.resource = resource;
@@ -43,6 +46,17 @@ MetryResource.prototype.save = function(object, config) {
 
 MetryResource.prototype.delete = function(id, config) {
   return this.req(makeConfig(this, id, 'DELETE', {}, config));
+};
+
+MetryResource.prototype.search = function(query, config) {
+  var method = mergedMethod('GET', config);
+  var data = makeSearchQuery(query);
+  return this.req(ObjectUtil.assign({
+    method: method,
+    url: makeUrl(['search', this.resource]),
+    data: useData(method) ? data : null,
+    params: !useData(method) ? ObjectUtil.filterEmptyValues(data) : null
+  }, config || {}));
 };
 
 MetryResource.prototype.batch = function (path, ids, data, config) {
@@ -90,4 +104,26 @@ function resourceUrl(resource, id, action) {
 
 function batchData(ids, data) {
   return ids.map(function(id) { return ObjectUtil.assign({_id: id}, data); });
+}
+
+// This function creates a merged elastic search query from a filter
+// object. It merges all params related to searching, but leaves sorting
+// and pagination as they are.
+// This means you can both use old-style params like box=active and q=box:active
+// in the same query, which can be useful if you want to let the user be in
+// charge of the q parameter, and yet limit the search.
+function makeSearchQuery(filter) {
+  var query = {};
+  var q = [];
+  Object.keys(filter).forEach(function(k) {
+    if (NON_QUERY_KEYS.indexOf(k) !== -1) {
+      query[k] = filter[k];
+    } else {
+      q.push({key: k, value: filter[k]});
+    }
+  });
+  query.q = [filter.q, SearchUtil.makeQuery(q)]
+    .filter(function(r) { return r !== null && typeof r !== 'undefined'; })
+    .join(' AND ');
+  return query;
 }
