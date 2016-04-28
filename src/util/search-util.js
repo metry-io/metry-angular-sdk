@@ -35,7 +35,7 @@ function queryTransform(queryArray) {
             (typeof q.value !== 'string' || q.value.length > 0));
   })
   .map(function(q) {
-    return [q.key, q.value].join(':');
+    return (q.key.length === 0) ? q.value : [q.key, q.value].join(':');
   })
   .filter(function(q) { return q !== null; })
   .join(' AND ');
