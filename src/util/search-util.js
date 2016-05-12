@@ -11,6 +11,7 @@ exports.makeQuery = function makeQuery(queryArray) {
   return queryArray
     .filter(function(q) {
       return (q && 'key' in q && 'value' in q && q.value !== null &&
+              q.useLegacy !== true &&
               typeof q.value !== 'undefined' &&
               (typeof q.value !== 'string' || q.value.length > 0));
     })
