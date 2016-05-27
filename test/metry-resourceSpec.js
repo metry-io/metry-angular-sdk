@@ -76,6 +76,21 @@ describe('Metry Resource', function() {
     $httpBackend.flush();
   });
 
+  it('should not alter the PUT object when saving', function() {
+    var resource = mry('tests');
+    var test = {
+      _id: '12345',
+      name: 'Working test'
+    };
+    var url = [BASE_URL, 'api/2.0', 'tests', test._id].join('/');
+
+    $httpBackend.expectPUT(url, {name: 'Working test'}).respond(200, {});
+    resource.save(test);
+    $httpBackend.flush();
+    expect(test._id).toBe('12345');
+    expect(test.name).toBe('Working test');
+  });
+
   it('should DELETE a resource with id from the api', function() {
     var resource = mry('tests');
     var testId = '67890';

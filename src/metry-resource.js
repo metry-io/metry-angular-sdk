@@ -35,7 +35,10 @@ MetryResource.prototype.query = function(params, config) {
 MetryResource.prototype.save = function(object, config) {
   var method = ('_id' in object) ? 'PUT' : 'POST';
   var id = object._id;
-  if ('_id' in object) { delete object._id; }
+  if ('_id' in object) {
+    object = ObjectUtil.assign({}, object);
+    delete object._id;
+  }
   return this.req(
     makeConfig(this, id, method, object, config)
   );
