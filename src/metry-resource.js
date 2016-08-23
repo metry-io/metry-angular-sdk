@@ -1,6 +1,8 @@
 var makeUrl = require('./util/makeurl.js');
 var ObjectUtil = require('./util/object-util.js');
 
+var METRIC_DEFAULT = 'energy';
+
 function MetryResource(request, resource, parent, parentId) {
   this.resource = resource;
   this.parent = parent;
@@ -14,17 +16,24 @@ MetryResource.prototype.get = function(id, config) {
   return this.req(makeConfig(this, id, 'GET', {}, config));
 };
 
-MetryResource.prototype.getData = function(id, granularity, ranges, metrics) {
-  metrics = metrics || ['energy'];
-  metrics = ObjectUtil.isArray(metrics) ? metrics : [metrics];
+MetryResource.prototype.getData = function(
+  id,
+  granularity,
+  ranges,
+  metrics,
+  extraParams
+) {
   ranges = ObjectUtil.isArray(ranges) ? ranges : [ranges];
+  var params = ObjectUtil.assign(
+    {},
+    {metrics: metricsParam(metrics)},
+    extraParams || {}
+  );
 
   return this.req({
     method: 'GET',
     url: makeUrl([resourceUrl(this), id, granularity, ranges.join('+')]),
-    params: {
-      metrics: metrics.join(',')
-    }
+    params: params
   });
 };
 
@@ -61,6 +70,14 @@ MetryResource.prototype.action = function(action, id, data, config) {
 MetryResource.prototype.of = function (parent, parentId) {
   return new MetryResource(this.req, this.resource, parent, parentId);
 };
+
+function metricsParam (metrics) {
+  return metrics == null
+    ? METRIC_DEFAULT
+    : ObjectUtil.isArray(metrics)
+      ? metrics.join(',')
+      : metrics;
+}
 
 function makeConfig(resource, id, method, data, extraConfig, action) {
   method = mergedMethod(method, extraConfig);

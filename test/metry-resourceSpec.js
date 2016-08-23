@@ -176,6 +176,16 @@ describe('Metry Resource', function() {
     $httpBackend.flush();
   });
 
+  it('should allow extra params along with metrics', function() {
+    var dummyIds = 'id12345,id434234,id243245';
+    var url = [BASE_URL, 'api/2.0', 'consumptions', 'sum', 'day', '20150101'].join('/');
+    var urlFlow = url + '?meters=' + dummyIds + '&metrics=flow';
+
+    $httpBackend.expectGET(urlFlow).respond(200, {});
+    mry('consumptions').getData('sum', 'day', '20150101', 'flow', {meters: dummyIds});
+    $httpBackend.flush();
+  });
+
   it('should allow fetching multiple metrics', function() {
     var dummyId = 'id12345';
     var url = [BASE_URL, 'api/2.0', 'consumptions', dummyId, 'day', '20150101'].join('/');
