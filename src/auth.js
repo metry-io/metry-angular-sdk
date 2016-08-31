@@ -113,11 +113,13 @@ module.exports = /* @ngInject */ function (
   }
 
   function accountHeaders (config) {
-    return ObjectUtil.assign(
-      {},
-      config.preventSubaccount ? {} : subaccountHeader(getSubaccount()),
-      organizationHeader(getOrganization())
-    )
+    return config.disableMetryHeaders
+      ? {}
+      : ObjectUtil.assign(
+        {},
+        subaccountHeader(getSubaccount()),
+        organizationHeader(getOrganization())
+      )
   }
 
   function subaccountHeader (subaccount) {

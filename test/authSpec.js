@@ -336,10 +336,10 @@ describe('Metry Auth', function () {
     $rootScope.$digest()
   })
 
-  it('should not use subaccounts when preventSubaccount flag is present', function () {
+  it('should not use subaccounts when disableMetryHeaders flag is present', function () {
     var config = {
       url: '/test',
-      preventSubaccount: true
+      disableMetryHeaders: true
     }
 
     auth.setRefreshToken(refreshToken)
@@ -359,6 +359,34 @@ describe('Metry Auth', function () {
 
       // Prevent screwing up next tests
       auth.setSubaccount(null)
+    })
+
+    $rootScope.$digest()
+  })
+
+  it('should not use organization when disableMetryHeaders flag is present', function () {
+    var config = {
+      url: '/test',
+      disableMetryHeaders: true
+    }
+
+    auth.setRefreshToken(refreshToken)
+    auth.setOrganization('abc123')
+
+    // Inject a token into localStorage
+    $window.localStorage.setItem('emAccessToken', JSON.stringify({
+      access_token: '130f6d30ef95d9c16a82d311fb32c852c8398cbb',
+      expires_at: 2146694400000,
+      scope: 'basic',
+      token_type: 'Bearer'
+    }))
+
+    auth.authorize(config).then(function (authorizedConfig) {
+      var customHeader = authorizedConfig.headers['X-Organzation']
+      expect(customHeader).toBe(undefined)
+
+      // Prevent screwing up next tests
+      auth.setOrganization(null)
     })
 
     $rootScope.$digest()
