@@ -3,6 +3,7 @@
 // Setting the private token will override all other tokens
 
 var makeUrl = require('./util/makeurl')
+var ObjectUtil = require('./util/object-util.js')
 
 var PATH_TOKEN = 'oauth/token'
 var PATH_AUTHORIZE = 'oauth/authorize'
@@ -10,6 +11,7 @@ var KEY_PRIVATE_TOKEN = 'emPrivateToken'
 var KEY_REFRESH_TOKEN = 'emRefreshToken'
 var KEY_ACCESS_TOKEN = 'emAccessToken'
 var KEY_SUBACCOUNT = 'emSubaccount'
+var KEY_ORGANIZATION = 'mryOrganization'
 
 module.exports = /* @ngInject */ function (
   $window,
@@ -25,8 +27,10 @@ module.exports = /* @ngInject */ function (
   function getRefreshToken () { return getToken(KEY_REFRESH_TOKEN) }
   function getAccessToken () { return getToken(KEY_ACCESS_TOKEN) }
   function getSubaccount () { return getToken(KEY_SUBACCOUNT) }
+  function getOrganization () { return getToken(KEY_ORGANIZATION) }
   function setPrivateToken (token) { setToken(token, KEY_PRIVATE_TOKEN) }
   function setSubaccount (account) { setToken(account, KEY_SUBACCOUNT) }
+  function setOrganization (org) { setToken(org, KEY_ORGANIZATION) }
 
   function setRefreshToken (token) {
     setToken(token, KEY_REFRESH_TOKEN)
@@ -67,12 +71,14 @@ module.exports = /* @ngInject */ function (
   function authorize (config) {
     return $q(function (resolve, reject) {
       var token = getPrivateToken()
-      var subaccount = getSubaccount()
+
       // Add subaccount
-      if (subaccount && !config.preventSubaccount) {
-        config.headers = config.headers || {}
-        config.headers['X-Subaccount'] = subaccount
-      }
+      config.headers = ObjectUtil.assign(
+        {},
+        config.headers,
+        accountHeaders(config)
+      )
+
       // Check for private api token
       if (token) {
         config.headers = config.headers || {}
@@ -80,18 +86,22 @@ module.exports = /* @ngInject */ function (
         resolve(config)
         return
       }
+
       // Check if OAuth is disabled in config. In that case, browser needs to
       // manage the authentication using session cookies
       if (METRY_AUTH_CONFIG.disabled) {
         resolve(config)
         return
       }
+
       // Check for OAuth refresh token
       var refreshToken = getRefreshToken()
+
       if (!refreshToken) {
         reject()
         return
       }
+
       ensureAccessToken(refreshToken).then(function (accessToken) {
         config.headers = config.headers || {}
         config.headers.Authorization = 'Bearer ' + accessToken.access_token
@@ -100,6 +110,22 @@ module.exports = /* @ngInject */ function (
         reject()
       })
     })
+  }
+
+  function accountHeaders (config) {
+    return ObjectUtil.assign(
+      {},
+      config.preventSubaccount ? {} : subaccountHeader(getSubaccount()),
+      organizationHeader(getOrganization())
+    )
+  }
+
+  function subaccountHeader (subaccount) {
+    return subaccount ? {'X-Subaccount': subaccount} : {}
+  }
+
+  function organizationHeader (organization) {
+    return organization ? {'X-Organization': organization} : {}
   }
 
   function ensureAccessToken (refreshToken) {
@@ -193,8 +219,10 @@ module.exports = /* @ngInject */ function (
     setPrivateToken: setPrivateToken,
     getRefreshToken: getRefreshToken,
     setRefreshToken: setRefreshToken,
+    getOrganization: getOrganization,
     getSubaccount: getSubaccount,
     setSubaccount: setSubaccount,
+    setOrganization: setOrganization,
     isAuthenticated: isAuthenticated,
     authorizeUrl: authorizeUrl,
     handleAuthCode: handleAuthCode,

@@ -363,4 +363,63 @@ describe('Metry Auth', function () {
 
     $rootScope.$digest()
   })
+
+  it('should add organization headers to requests', function () {
+    var config = {
+      url: '/test'
+    }
+
+    auth.setRefreshToken(refreshToken)
+    auth.setOrganization('abc123')
+
+    // Inject a token into localStorage
+    $window.localStorage.setItem('emAccessToken', JSON.stringify({
+      access_token: '130f6d30ef95d9c16a82d311fb32c852c8398cbb',
+      expires_at: 2146694400000,
+      scope: 'basic',
+      token_type: 'Bearer'
+    }))
+
+    auth.authorize(config).then(function (authorizedConfig) {
+      var customHeader = authorizedConfig.headers['X-Organization']
+      expect(customHeader).toBe('abc123')
+
+      // Prevent screwing up next tests
+      auth.setOrganization(null)
+    })
+
+    $rootScope.$digest()
+  })
+
+  it('should add both subaccount and organization headers to requests', function () {
+    var config = {
+      url: '/test'
+    }
+
+    auth.setRefreshToken(refreshToken)
+    auth.setOrganization('abc123')
+    auth.setSubaccount('abc123')
+
+    // Inject a token into localStorage
+    $window.localStorage.setItem('emAccessToken', JSON.stringify({
+      access_token: '130f6d30ef95d9c16a82d311fb32c852c8398cbb',
+      expires_at: 2146694400000,
+      scope: 'basic',
+      token_type: 'Bearer'
+    }))
+
+    auth.authorize(config).then(function (authorizedConfig) {
+      var organizationHeader = authorizedConfig.headers['X-Organization']
+      var subaccountHeader = authorizedConfig.headers['X-Subaccount']
+
+      expect(organizationHeader).toBe('abc123')
+      expect(subaccountHeader).toBe('abc123')
+
+      // Prevent screwing up next tests
+      auth.setOrganization(null)
+      auth.setSubaccount(null)
+    })
+
+    $rootScope.$digest()
+  })
 })
