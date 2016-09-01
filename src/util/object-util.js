@@ -1,5 +1,6 @@
 module.exports = {
   assign: assign,
+  remove: remove,
   filterEmptyValues: filterEmptyValues,
   isArray: isArray,
   isString: isString,
@@ -39,6 +40,17 @@ function assign (target, source) {
     }
   }
   return to
+}
+
+function remove (obj, key) {
+  if (obj != null && obj.hasOwnProperty(key)) {
+    var value = obj[key]
+    obj[key] = undefined
+
+    return value
+  }
+
+  return undefined
 }
 
 function isString (object) {
