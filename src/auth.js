@@ -22,6 +22,25 @@ module.exports = /* @ngInject */ function (
 ) {
   var requestQueue = []
   var fetchingAccessToken = false
+  var tempStorage
+
+  var hasLocalStorage = (function () {
+    try {
+      if ('localStorage' in $window) {
+        $window.localStorage.setItem('test', '1')
+        $window.localStorage.removeItem('test')
+        return true
+      }
+    } catch (exception) {}
+    tempStorage = {
+      _data: {},
+      setItem: function (key, value) { this._data[key] = value },
+      removeItem: function (key) { this._data[key] = undefined },
+      getItem: function (key) { return this._data[key] }
+    }
+
+    return false
+  })()
 
   function getPrivateToken () { return getToken(KEY_PRIVATE_TOKEN) }
   function getRefreshToken () { return getToken(KEY_REFRESH_TOKEN) }
@@ -44,8 +63,12 @@ module.exports = /* @ngInject */ function (
     setToken(token, KEY_ACCESS_TOKEN)
   }
 
+  function storage () {
+    return hasLocalStorage ? $window.localStorage : tempStorage
+  }
+
   function getToken (key) {
-    var value = $window.localStorage.getItem(key)
+    var value = storage().getItem(key)
     if (value && (value.charAt(0) === '{' || value.charAt(0) === '[')) {
       return JSON.parse(value)
     }
@@ -58,9 +81,9 @@ module.exports = /* @ngInject */ function (
       if (type !== 'string' && type !== 'number') {
         token = JSON.stringify(token)
       }
-      $window.localStorage.setItem(key, token)
+      storage().setItem(key, token)
     } else {
-      $window.localStorage.removeItem(key)
+      storage().removeItem(key)
     }
   }
 
