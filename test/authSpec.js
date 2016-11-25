@@ -382,7 +382,7 @@ describe('Metry Auth', function () {
     }))
 
     auth.authorize(config).then(function (authorizedConfig) {
-      var customHeader = authorizedConfig.headers['X-Organzation']
+      var customHeader = authorizedConfig.headers['X-Organization']
       expect(customHeader).toBe(undefined)
 
       // Prevent screwing up next tests
