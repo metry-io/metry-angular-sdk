@@ -6,6 +6,7 @@
   "scripts": {
     "clean": "rm -rf ./tmp && mkdir ./tmp",
     "prestart": "npm run clean",
+    "test": "npm run start",
     "start": "npm run build:debug && npm run test:debug && npm run build:min && npm run test:min",
     "test:min": "karma start",
     "test:debug": "karma start karma.debug.conf.js",
